@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,19 +40,21 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> create(@Valid @RequestBody CreateOrderRequest dto) {
 
-        return ResponseEntity.ok(orderService.create(dto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(orderService.create(dto));
     }
 
     @Operation(summary = "Get order by id")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User found"),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "200", description = "Oder found"),
+            @ApiResponse(responseCode = "404", description = "Oder not found")
     })
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getById(id));
     }
 
+    @Operation(summary = "Get orders by user id")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<OrderResponse>> getByUserId(@PathVariable Long userId) {
 
@@ -96,7 +99,15 @@ public class OrderController {
             throw new IllegalArgumentException("Invalid sort format. Use field,direction");
         }
 
-        Sort.Direction direction = Sort.Direction.fromString(sortParams[1]);
+        Sort.Direction direction;
+
+        try {
+            direction = Sort.Direction.fromString(sortParams[1]);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(
+                    "Sort direction must be asc or desc"
+            );
+        }
 
         OrderFilter filter = new OrderFilter();
 
