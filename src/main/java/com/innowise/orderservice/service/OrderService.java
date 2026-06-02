@@ -1,10 +1,13 @@
 package com.innowise.orderservice.service;
 
+import com.innowise.orderservice.client.UserClient;
+import com.innowise.orderservice.client.dto.UserResponse;
 import com.innowise.orderservice.exception.OrderNotFoundException;
+import com.innowise.orderservice.mapper.OrderMapper;
 import com.innowise.orderservice.model.dto.OrderFilter;
 import com.innowise.orderservice.model.dto.request.CreateOrderRequest;
-import com.innowise.orderservice.model.dto.request.OrderItemRequest;
 import com.innowise.orderservice.model.dto.request.UpdateOrderRequest;
+import com.innowise.orderservice.model.dto.response.OrderResponse;
 import com.innowise.orderservice.model.entity.Item;
 import com.innowise.orderservice.model.entity.Order;
 import com.innowise.orderservice.model.entity.OrderItem;
@@ -12,6 +15,7 @@ import com.innowise.orderservice.model.entity.OrderStatus;
 import com.innowise.orderservice.repository.ItemRepository;
 import com.innowise.orderservice.repository.OrderRepository;
 import com.innowise.orderservice.repository.OrderSpecification;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,93 +23,109 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
+    private final UserClient userClient;
+    private final OrderMapper orderMapper;
 
-    public Order create(CreateOrderRequest request) {
+    @Transactional
+    public OrderResponse create(CreateOrderRequest request) {
 
-        Order order = new Order();
-
-        order.setUserId(request.getUserId());
+        Order order = orderMapper.toEntity(request);
         order.setStatus(OrderStatus.CREATED);
-
-        List<OrderItem> orderItems = new ArrayList<>();
 
         BigDecimal total = BigDecimal.ZERO;
 
-        for (OrderItemRequest dto : request.getItems()) {
+        for (OrderItem item : order.getOrderItems()) {
 
-            Item item = itemRepository.findById(dto.getItemId())
+            Item dbItem = itemRepository.findById(item.getItem().getId())
                     .orElseThrow();
 
-            OrderItem orderItem = new OrderItem();
-
-            orderItem.setOrder(order);
-            orderItem.setItem(item);
-            orderItem.setQuantity(dto.getQuantity());
+            item.setItem(dbItem);
+            item.setOrder(order);
 
             total = total.add(
-                    item.getPrice()
-                            .multiply(BigDecimal.valueOf(dto.getQuantity()))
+                    dbItem.getPrice()
+                            .multiply(BigDecimal.valueOf(item.getQuantity()))
             );
-
-            orderItems.add(orderItem);
         }
 
-        order.setOrderItems(orderItems);
         order.setTotalPrice(total);
 
-        return orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+
+        return buildResponse(saved);
     }
 
-    @Transactional(readOnly = true)
-    public Order getById(Long id) {
+    public OrderResponse getById(Long id) {
 
-        return orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new OrderNotFoundException(id));
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+
+        return buildResponse(order);
     }
 
-    @Transactional(readOnly = true)
-    public List<Order> getByUserId(Long userId) {
+    @CircuitBreaker(name = "userService", fallbackMethod = "userFallback")
+    public List<OrderResponse> getByUserId(Long userId) {
 
-        return orderRepository.findByUserId(userId);
+        return orderRepository.findByUserId(userId)
+                .stream()
+                .map(this::buildResponse)
+                .toList();
     }
 
-    @Transactional(readOnly = true)
-    public Page<Order> getAll(
-            OrderFilter filter,
-            Pageable pageable
-    ) {
+    public OrderResponse userFallback(Long id, Exception ex) {
 
-        return orderRepository.findAll(
-                OrderSpecification.filter(filter),
-                pageable
-        );
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+
+        OrderResponse response = orderMapper.toResponse(order);
+
+        response.setUser(new UserResponse(
+                null, "unknown", "unknown", "UNKNOWN", false
+        ));
+
+        return response;
     }
 
-    public Order update(
-            Long id,
-            UpdateOrderRequest request
-    ) {
+    public Page<OrderResponse> getAll(OrderFilter filter, Pageable pageable) {
 
-        Order order = getById(id);
-
-        order.setStatus(request.getStatus());
-
-        return orderRepository.save(order);
+        return orderRepository.findAll(OrderSpecification.filter(filter), pageable)
+                .map(this::buildResponse);
     }
 
+    @Transactional
+    public OrderResponse update(Long id, UpdateOrderRequest request) {
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new OrderNotFoundException(id));
+
+        order.setStatus(request.getOrderStatus());
+
+        Order saved = orderRepository.save(order);
+
+        return buildResponse(saved);
+    }
+
+    @Transactional
     public void delete(Long id) {
 
-        orderRepository.delete(getById(id));
+        orderRepository.deleteById(id);
+    }
+
+    private OrderResponse buildResponse(Order order) {
+
+        OrderResponse response = orderMapper.toResponse(order);
+
+        UserResponse user = userClient.getByUserId(order.getUserId());
+        response.setUser(user);
+
+        return response;
     }
 }

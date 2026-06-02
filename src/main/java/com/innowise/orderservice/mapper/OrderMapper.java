@@ -1,5 +1,6 @@
 package com.innowise.orderservice.mapper;
 
+import com.innowise.orderservice.model.dto.request.CreateOrderRequest;
 import com.innowise.orderservice.model.dto.response.OrderItemResponse;
 import com.innowise.orderservice.model.dto.response.OrderResponse;
 import com.innowise.orderservice.model.entity.Order;
@@ -14,6 +15,8 @@ public interface OrderMapper {
 
     @Mapping(target = "items", source = "orderItems")
     OrderResponse toResponse(Order order);
+
+    Order toEntity(CreateOrderRequest request);
 
     @Mapping(target = "itemId", source = "item.id")
     @Mapping(target = "itemName", source = "item.name")
