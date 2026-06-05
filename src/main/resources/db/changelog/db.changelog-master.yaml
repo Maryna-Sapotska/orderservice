@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/V2_create_items.yaml
   - include:
       file: db/changelog/V3_create_order_items.yaml
+  - include:
+      file: db/changelog/V4_insert_items.yaml

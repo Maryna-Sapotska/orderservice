@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/orderservice}
-    username: ${SPRING_DATASOURCE_USERNAME:orderservice}
-    password: ${SPRING_DATASOURCE_PASSWORD:orderservice}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/orders-db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 
   jpa:
     hibernate:
@@ -14,16 +14,15 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     clear-check-sums: true
 
-  data:
-    redis:
-      host: ${SPRING_REDIS_HOST:localhost}
-      port: ${SPRING_REDIS_PORT:6379}
-
 jwt:
-  secret: bXktc3VwZXItc2VjcmV0LWtleS1teS1zdXBlci1zZWNyZXQta2V5LTEyMzQ=
+  secret: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1teS1zdXBlci1zZWNyZXQta2V5LTEyMzQ=}
 
 server:
   port: 8082
+
+services:
+  users-service:
+    url: http://users-service:8080
 
 logging:
   level:

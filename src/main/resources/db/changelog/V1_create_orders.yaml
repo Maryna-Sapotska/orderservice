@@ -37,8 +37,15 @@ databaseChangeLog:
                   type: boolean
                   defaultValueBoolean: false
               - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
                   name: updated_at
-                  type: TIMESTAMP
+                  type: timestamp
+                  constraints:
+                    nullable: false
 
         - createIndex:
             tableName: orders
