@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class OrderIntegrationTest extends AbstractIntegrationTest{
+class OrderIntegrationTest extends AbstractIntegrationTest{
 
     @Autowired
     private OrderService orderService;

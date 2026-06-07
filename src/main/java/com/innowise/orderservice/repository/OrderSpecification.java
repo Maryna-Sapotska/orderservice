@@ -10,6 +10,9 @@ import java.util.List;
 
 
 public class OrderSpecification {
+    private OrderSpecification() {
+    }
+
 
     public static Specification<Order> filter(
             OrderFilter filter

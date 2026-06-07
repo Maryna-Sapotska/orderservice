@@ -1,7 +1,6 @@
 package com.innowise.orderservice.mapper;
 
 import com.innowise.orderservice.model.dto.request.CreateOrderRequest;
-import com.innowise.orderservice.model.dto.request.OrderItemRequest;
 import com.innowise.orderservice.model.dto.response.OrderItemResponse;
 import com.innowise.orderservice.model.dto.response.OrderResponse;
 import com.innowise.orderservice.model.entity.Order;

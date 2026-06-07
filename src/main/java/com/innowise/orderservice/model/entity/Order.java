@@ -34,7 +34,6 @@ import java.util.List;
     SET deleted = true
     WHERE id = ?
 """)
-@Where(clause = "deleted = false")
 public class Order extends BaseEntity{
 
     @Id

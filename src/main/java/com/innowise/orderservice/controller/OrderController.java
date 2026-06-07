@@ -53,10 +53,6 @@ public class OrderController {
     }
 
     @Operation(summary = "Get order by id")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Oder found"),
-            @ApiResponse(responseCode = "404", description = "Oder not found")
-    })
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getById(id));

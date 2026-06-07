@@ -96,7 +96,7 @@ public class OrderService {
         return userClient.getByUserId(userId);
     }
 
-    protected UserResponse userFallback(Long userId, Exception ex) {
+    protected UserResponse userFallback() {
 
         return new UserResponse(
                 null,
@@ -132,7 +132,7 @@ public class OrderService {
                         return buildResponse(fullOrder);
                     } catch (Exception e) {
                         OrderResponse response = orderMapper.toResponse(fullOrder);
-                        response.setUser(userFallback(o.getUserId(), e));
+                        response.setUser(userFallback());
                         return response;
                     }
                 })
@@ -167,7 +167,7 @@ public class OrderService {
         try {
             response.setUser(getUser(order.getUserId()));
         } catch (Exception e) {
-            response.setUser(userFallback(order.getUserId(), e));
+            response.setUser(userFallback());
         }
 
         return response;

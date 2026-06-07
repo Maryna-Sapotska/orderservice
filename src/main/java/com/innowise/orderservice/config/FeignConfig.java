@@ -17,7 +17,6 @@ public class FeignConfig {
 
             if (attrs != null) {
                 String authHeader = attrs.getRequest().getHeader("Authorization");
-                System.out.println("AUTH HEADER = " + authHeader);
                 if (authHeader != null) {
                     requestTemplate.header("Authorization", authHeader);
                 }
