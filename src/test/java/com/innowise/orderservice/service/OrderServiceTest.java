@@ -10,7 +10,6 @@ import com.innowise.orderservice.model.dto.request.UpdateOrderRequest;
 import com.innowise.orderservice.model.dto.response.OrderResponse;
 import com.innowise.orderservice.model.entity.Item;
 import com.innowise.orderservice.model.entity.Order;
-import com.innowise.orderservice.model.entity.OrderItem;
 import com.innowise.orderservice.model.entity.OrderStatus;
 import com.innowise.orderservice.repository.ItemRepository;
 import com.innowise.orderservice.repository.OrderRepository;
@@ -25,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

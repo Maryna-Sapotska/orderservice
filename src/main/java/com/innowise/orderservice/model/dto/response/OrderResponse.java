@@ -2,7 +2,11 @@ package com.innowise.orderservice.model.dto.response;
 
 import com.innowise.orderservice.client.dto.UserResponse;
 import com.innowise.orderservice.model.entity.OrderStatus;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

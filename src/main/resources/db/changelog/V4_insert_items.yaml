@@ -6,9 +6,9 @@ databaseChangeLog:
         - insert:
             tableName: items
             columns:
-              - column:
-                  name: id
-                  valueNumeric: 1
+#              - column:
+#                  name: id
+#                  valueNumeric: 1
               - column:
                   name: name
                   value: Keyboard
@@ -25,9 +25,9 @@ databaseChangeLog:
         - insert:
             tableName: items
             columns:
-              - column:
-                  name: id
-                  valueNumeric: 2
+#              - column:
+#                  name: id
+#                  valueNumeric: 2
               - column:
                   name: name
                   value: Mouse
