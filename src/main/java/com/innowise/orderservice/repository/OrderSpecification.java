@@ -22,6 +22,10 @@ public class OrderSpecification {
 
             List<Predicate> predicates = new ArrayList<>();
 
+            predicates.add(
+                    cb.isFalse(root.get("deleted"))
+            );
+
             if (filter.getCreatedFrom() != null) {
                 predicates.add(
                         cb.greaterThanOrEqualTo(

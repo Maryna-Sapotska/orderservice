@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
@@ -34,6 +35,7 @@ import java.util.List;
     SET deleted = true
     WHERE id = ?
 """)
+@SQLRestriction("deleted = false")
 public class Order extends BaseEntity{
 
     @Id
