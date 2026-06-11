@@ -44,6 +44,15 @@ public class OrderSpecification {
                 );
             }
 
+            if (filter.getUserId() != null) {
+                predicates.add(
+                        cb.equal(
+                                root.get("userId"),
+                                filter.getUserId()
+                        )
+                );
+            }
+
             if (filter.getStatuses() != null
                     && !filter.getStatuses().isEmpty()) {
 

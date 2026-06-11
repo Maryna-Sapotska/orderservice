@@ -2,6 +2,7 @@ package com.innowise.orderservice.service;
 
 import com.innowise.orderservice.client.UserClient;
 import com.innowise.orderservice.client.dto.UserResponse;
+import com.innowise.orderservice.exception.ItemNotFoundException;
 import com.innowise.orderservice.exception.OrderNotFoundException;
 import com.innowise.orderservice.mapper.OrderMapper;
 import com.innowise.orderservice.model.dto.OrderFilter;
@@ -18,6 +19,7 @@ import com.innowise.orderservice.repository.OrderRepository;
 import com.innowise.orderservice.repository.OrderSpecification;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -52,7 +55,7 @@ public class OrderService {
         for (OrderItemRequest req : request.getItems()) {
 
             Item dbItem = itemRepository.findById(req.getItemId())
-                    .orElseThrow(()-> new RuntimeException("ITEM NOT FOUND: " + req.getItemId()));
+                    .orElseThrow(()-> new ItemNotFoundException(req.getItemId()));
 
             OrderItem orderItem = new OrderItem();
             orderItem.setItem(dbItem);
@@ -96,10 +99,12 @@ public class OrderService {
         return userClient.getByUserId(userId);
     }
 
-    protected UserResponse userFallback() {
+    protected UserResponse userFallback(Long userId, Throwable t) {
+
+        log.warn("Fallback triggered for userId={}", userId, t);
 
         return new UserResponse(
-                null,
+                userId,
                 "unknown",
                 "unknown",
                 "UNKNOWN",
@@ -132,7 +137,7 @@ public class OrderService {
                         return buildResponse(fullOrder);
                     } catch (Exception e) {
                         OrderResponse response = orderMapper.toResponse(fullOrder);
-                        response.setUser(userFallback());
+                        response.setUser(userFallback(fullOrder.getUserId(), e));
                         return response;
                     }
                 })
@@ -167,7 +172,7 @@ public class OrderService {
         try {
             response.setUser(getUser(order.getUserId()));
         } catch (Exception e) {
-            response.setUser(userFallback());
+            response.setUser(userFallback(order.getUserId(), e));
         }
 
         return response;

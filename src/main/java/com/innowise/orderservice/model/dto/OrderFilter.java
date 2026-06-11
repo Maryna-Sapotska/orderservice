@@ -11,6 +11,8 @@ import java.util.List;
 @Setter
 public class OrderFilter {
 
+    private Long userId;
+
     private LocalDateTime createdFrom;
 
     private LocalDateTime createdTo;

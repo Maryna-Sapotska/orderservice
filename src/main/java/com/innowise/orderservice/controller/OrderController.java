@@ -9,7 +9,6 @@ import com.innowise.orderservice.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -58,17 +57,14 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getById(id));
     }
 
-    @Operation(summary = "Get orders by user id")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderResponse>> getByUserId(@PathVariable Long userId) {
-
-        return ResponseEntity.ok(orderService.getByUserId(userId));
-    }
-
     @Operation(summary = "Get all orders with filters and pagination")
     @ApiResponse(responseCode = "200", description = "Orders retrieved")
     @GetMapping
     public ResponseEntity<Page<OrderResponse>> getAll(
+            @Parameter(description = "Filter by user id")
+            @RequestParam(required = false)
+            Long userId,
+
             @Parameter(description = "Filter by statuses")
             @RequestParam(required = false)
             List<OrderStatus> statuses,
@@ -115,6 +111,7 @@ public class OrderController {
 
         OrderFilter filter = new OrderFilter();
 
+        filter.setUserId(userId);
         filter.setStatuses(statuses);
         filter.setCreatedFrom(createdFrom);
         filter.setCreatedTo(createdTo);
