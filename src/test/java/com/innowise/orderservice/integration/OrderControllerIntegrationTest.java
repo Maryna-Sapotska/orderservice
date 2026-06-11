@@ -114,12 +114,13 @@ class OrderControllerIntegrationTest extends AbstractIntegrationTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(get(OrderController.REST_URL + "/user/1"))
+        mockMvc.perform(get(OrderController.REST_URL)
+                        .param("userId", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].totalPrice").value(1000))
-                .andExpect(jsonPath("$[0].user.name").value("John"))
-                .andExpect(jsonPath("$[0].items", hasSize(1)))
-                .andExpect(jsonPath("$[0].items[0].itemName").value("Laptop"));
+                .andExpect(jsonPath("$.content[0].totalPrice").value(1000))
+                .andExpect(jsonPath("$.content[0].user.name").value("John"))
+                .andExpect(jsonPath("$.content[0].items", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].items[0].itemName").value("Laptop"));
     }
 
     @Test
