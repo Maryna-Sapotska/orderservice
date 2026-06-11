@@ -28,9 +28,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://orders-db:5432/orders-db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      SERVICES_USER_SERVICE_URL: http://users-service:8080
+      SERVICES_USERS_SERVICE_URL: http://users-service:8080
 
-      JWT_SECRET: bXktc3VwZXItc2VjcmV0LWtleS1teS1zdXBlci1zZWNyZXQta2V5LTEyMzQ=
+      JWT_SECRET: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1teS1zdXBlci1zZWNyZXQta2V5LTEyMzQ=}
 
     networks:
       - microservices-net

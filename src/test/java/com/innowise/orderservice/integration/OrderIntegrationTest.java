@@ -1,6 +1,5 @@
 package com.innowise.orderservice.integration;
 
-import com.innowise.orderservice.client.UserClient;
 import com.innowise.orderservice.model.dto.request.CreateOrderRequest;
 import com.innowise.orderservice.model.dto.request.OrderItemRequest;
 import com.innowise.orderservice.model.dto.response.OrderResponse;
@@ -9,7 +8,7 @@ import com.innowise.orderservice.service.OrderService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,8 +17,6 @@ class OrderIntegrationTest extends AbstractIntegrationTest{
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private UserClient userClient;
 
     @Test
     void shouldCreateOrderWithUserFromFeign() {
@@ -40,9 +37,9 @@ class OrderIntegrationTest extends AbstractIntegrationTest{
         request.setItems(List.of(req));
 
         OrderResponse response = orderService.create(request);
-        response.setUser(userClient.getByUserId(request.getUserId()));
 
         assertEquals(2000, response.getTotalPrice().intValue());
+        assertEquals(1L, response.getUser().getId());
         assertEquals("John", response.getUser().getName());
     }
 

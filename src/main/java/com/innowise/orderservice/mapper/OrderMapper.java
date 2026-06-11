@@ -16,7 +16,10 @@ public interface OrderMapper {
     @Mapping(target = "items", source = "orderItems")
     OrderResponse toResponse(Order order);
 
-    @Mapping(target = "orderItems", source = "items")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orderItems", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "totalPrice", ignore = true)
     Order toEntity(CreateOrderRequest request);
 
     @Mapping(target = "itemId", source = "item.id")

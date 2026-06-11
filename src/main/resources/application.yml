@@ -22,7 +22,7 @@ server:
 
 services:
   users-service:
-    url: http://users-service:8080
+    url: ${SERVICES_USERS_SERVICE_URL:http://users-service:8080}
 
 logging:
   level:

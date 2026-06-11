@@ -45,8 +45,7 @@ public class OrderService {
     @Transactional
     public OrderResponse create(CreateOrderRequest request) {
 
-        Order order = new Order();
-        order.setUserId(request.getUserId());
+        Order order = orderMapper.toEntity(request);
         order.setStatus(OrderStatus.CREATED);
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -130,17 +129,7 @@ public class OrderService {
                 .collect(Collectors.toMap(Order::getId, o -> o));
 
         List<OrderResponse> content = page.getContent().stream()
-                .map(o -> {
-                    Order fullOrder = orderMap.get(o.getId());
-
-                    try {
-                        return buildResponse(fullOrder);
-                    } catch (Exception e) {
-                        OrderResponse response = orderMapper.toResponse(fullOrder);
-                        response.setUser(userFallback(fullOrder.getUserId(), e));
-                        return response;
-                    }
-                })
+                .map(o -> buildResponse(orderMap.get(o.getId())))
                 .toList();
 
         return new PageImpl<>(content, pageable, page.getTotalElements());
