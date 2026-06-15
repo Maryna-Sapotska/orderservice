@@ -3,12 +3,14 @@ package com.innowise.orderservice.repository;
 import com.innowise.orderservice.model.dto.OrderFilter;
 import com.innowise.orderservice.model.entity.Order;
 import jakarta.persistence.criteria.Predicate;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderSpecification {
 
     public static Specification<Order> filter(

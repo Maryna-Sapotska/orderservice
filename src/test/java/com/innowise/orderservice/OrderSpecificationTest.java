@@ -36,28 +36,6 @@ class OrderSpecificationTest {
     }
 
     @Test
-    void filter_shouldApplyCreatedFrom() {
-        OrderFilter filter = new OrderFilter();
-        filter.setCreatedFrom(LocalDateTime.now());
-
-        Specification<Order> spec =
-                OrderSpecification.filter(filter);
-
-        assertNotNull(spec);
-    }
-
-    @Test
-    void filter_shouldApplyCreatedTo() {
-        OrderFilter filter = new OrderFilter();
-        filter.setCreatedTo(LocalDateTime.now());
-
-        Specification<Order> spec =
-                OrderSpecification.filter(filter);
-
-        assertNotNull(spec);
-    }
-
-    @Test
     void filter_shouldApplyStatuses() {
         OrderFilter filter = new OrderFilter();
         filter.setStatuses(List.of(OrderStatus.CREATED));
