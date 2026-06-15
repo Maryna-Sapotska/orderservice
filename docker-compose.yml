@@ -30,8 +30,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: postgres
       SERVICES_USERS_SERVICE_URL: http://users-service:8080
 
-      JWT_SECRET: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1teS1zdXBlci1zZWNyZXQta2V5LTEyMzQ=}
-
     networks:
       - microservices-net
 

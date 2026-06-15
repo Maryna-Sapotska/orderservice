@@ -170,45 +170,6 @@ class OrderServiceTest {
     }
 
     @Test
-    void getByUserId_shouldReturnOrders() {
-
-        Order order = new Order();
-        order.setId(1L);
-        order.setUserId(10L);
-
-        OrderResponse response =
-                OrderResponse.builder().build();
-
-        UserResponse user =
-                new UserResponse(
-                        10L,
-                        "john",
-                        "john@test.com",
-                        "USER",
-                        true
-                );
-
-        when(orderRepository.findByUserId(10L))
-                .thenReturn(List.of(order));
-
-        when(orderMapper.toResponse(order))
-                .thenReturn(response);
-
-        when(userClient.getByUserId(10L))
-                .thenReturn(user);
-
-        List<OrderResponse> result =
-                orderService.getByUserId(10L);
-
-        assertEquals(1, result.size());
-
-        assertEquals(
-                user,
-                result.getFirst().getUser()
-        );
-    }
-
-    @Test
     void getAll_shouldReturnPageOfOrders() {
 
         Order order = new Order();

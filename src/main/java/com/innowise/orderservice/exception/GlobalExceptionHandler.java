@@ -43,16 +43,6 @@ public class GlobalExceptionHandler {
                 .body(errors);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneral(
-            Exception ex
-    ) {
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Internal server error");
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(
             IllegalArgumentException ex) {

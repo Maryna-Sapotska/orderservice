@@ -13,10 +13,6 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     clear-check-sums: true
-
-jwt:
-  secret: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1teS1zdXBlci1zZWNyZXQta2V5LTEyMzQ=}
-
 server:
   port: 8082
 

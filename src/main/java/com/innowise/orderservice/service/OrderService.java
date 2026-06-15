@@ -85,14 +85,6 @@ public class OrderService {
         return buildResponse(order);
     }
 
-    public List<OrderResponse> getByUserId(Long userId) {
-
-        return orderRepository.findByUserId(userId)
-                .stream()
-                .map(this::buildResponse)
-                .toList();
-    }
-
     @CircuitBreaker(name = "userService", fallbackMethod = "userFallback")
     protected UserResponse getUser(Long userId) {
         return userClient.getByUserId(userId);
@@ -157,12 +149,7 @@ public class OrderService {
     private OrderResponse buildResponse(Order order) {
 
         OrderResponse response = orderMapper.toResponse(order);
-
-        try {
             response.setUser(getUser(order.getUserId()));
-        } catch (Exception e) {
-            response.setUser(userFallback(order.getUserId(), e));
-        }
 
         return response;
     }

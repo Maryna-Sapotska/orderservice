@@ -6,6 +6,7 @@ import com.innowise.orderservice.model.dto.request.UpdateOrderRequest;
 import com.innowise.orderservice.model.dto.response.OrderResponse;
 import com.innowise.orderservice.model.entity.OrderStatus;
 import com.innowise.orderservice.service.OrderService;
+import com.innowise.orderservice.util.PageableUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,9 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,22 +92,6 @@ public class OrderController {
             @RequestParam(defaultValue = "id,asc")
             String sort) {
 
-        String[] sortParams = sort.split(",");
-
-        if (sortParams.length != 2) {
-            throw new IllegalArgumentException("Invalid sort format. Use field,direction");
-        }
-
-        Sort.Direction direction;
-
-        try {
-            direction = Sort.Direction.fromString(sortParams[1]);
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException(
-                    "Sort direction must be asc or desc"
-            );
-        }
-
         OrderFilter filter = new OrderFilter();
 
         filter.setUserId(userId);
@@ -116,11 +99,8 @@ public class OrderController {
         filter.setCreatedFrom(createdFrom);
         filter.setCreatedTo(createdTo);
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(direction, sortParams[0])
-        );
+        Pageable pageable = PageableUtils.buildPageable(page, size, sort);
+
         return ResponseEntity.ok(orderService.getAll(filter, pageable));
     }
 
