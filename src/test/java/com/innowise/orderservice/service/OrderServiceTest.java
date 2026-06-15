@@ -1,6 +1,6 @@
 package com.innowise.orderservice.service;
 
-import com.innowise.orderservice.client.UserClient;
+import com.innowise.orderservice.client.UserServiceClient;
 import com.innowise.orderservice.client.dto.UserResponse;
 import com.innowise.orderservice.exception.OrderNotFoundException;
 import com.innowise.orderservice.mapper.OrderMapper;
@@ -33,7 +33,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +47,7 @@ class OrderServiceTest {
     private ItemRepository itemRepository;
 
     @Mock
-    private UserClient userClient;
+    private UserServiceClient userServiceClient;
 
     @Mock
     private OrderMapper orderMapper;
@@ -107,7 +106,7 @@ class OrderServiceTest {
         when(orderMapper.toResponse(any(Order.class)))
                 .thenReturn(response);
 
-        when(userClient.getByUserId(userId))
+        when(userServiceClient.getUser(userId))
                 .thenReturn(user);
 
         OrderResponse result = orderService.create(request);
@@ -119,7 +118,7 @@ class OrderServiceTest {
 
         verify(itemRepository).findById(10L);
         verify(orderRepository).save(any(Order.class));
-        verify(userClient).getByUserId(userId);
+        verify(userServiceClient).getUser(userId);
     }
 
     @Test
@@ -157,7 +156,7 @@ class OrderServiceTest {
         when(orderMapper.toResponse(order))
                 .thenReturn(response);
 
-        when(userClient.getByUserId(10L))
+        when(userServiceClient.getUser(10L))
                 .thenReturn(user);
 
         OrderResponse result = orderService.getById(1L);
@@ -166,7 +165,7 @@ class OrderServiceTest {
         assertEquals(user, result.getUser());
 
         verify(orderRepository).findByIdWithItems(1L);
-        verify(userClient).getByUserId(10L);
+        verify(userServiceClient).getUser(10L);
     }
 
     @Test
@@ -203,7 +202,7 @@ class OrderServiceTest {
         when(orderMapper.toResponse(order))
                 .thenReturn(response);
 
-        when(userClient.getByUserId(10L))
+        when(userServiceClient.getUser(10L))
                 .thenReturn(user);
 
         Page<OrderResponse> result =
@@ -251,7 +250,7 @@ class OrderServiceTest {
         when(orderMapper.toResponse(order))
                 .thenReturn(response);
 
-        when(userClient.getByUserId(10L))
+        when(userServiceClient.getUser(10L))
                 .thenReturn(user);
 
         OrderResponse result =
@@ -291,21 +290,5 @@ class OrderServiceTest {
         orderService.delete(orderId);
 
         verify(orderRepository).deleteById(orderId);
-    }
-
-    @Test
-    void userFallback_shouldReturnUnknownUser() {
-
-        UserResponse result =
-                orderService.userFallback(
-                        10L,
-                        new RuntimeException("boom")
-                );
-
-        assertEquals(10L, result.getId());
-        assertEquals("unknown", result.getName());
-        assertEquals("unknown", result.getSurname());
-        assertEquals("UNKNOWN", result.getEmail());
-        assertFalse(result.isActive());
     }
 }

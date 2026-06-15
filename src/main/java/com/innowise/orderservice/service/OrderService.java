@@ -1,6 +1,7 @@
 package com.innowise.orderservice.service;
 
 import com.innowise.orderservice.client.UserClient;
+import com.innowise.orderservice.client.UserServiceClient;
 import com.innowise.orderservice.client.dto.UserResponse;
 import com.innowise.orderservice.exception.ItemNotFoundException;
 import com.innowise.orderservice.exception.OrderNotFoundException;
@@ -41,6 +42,7 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final UserClient userClient;
     private final OrderMapper orderMapper;
+    private final UserServiceClient userServiceClient;
 
     @Transactional
     public OrderResponse create(CreateOrderRequest request) {
@@ -85,23 +87,23 @@ public class OrderService {
         return buildResponse(order);
     }
 
-    @CircuitBreaker(name = "userService", fallbackMethod = "userFallback")
-    protected UserResponse getUser(Long userId) {
-        return userClient.getByUserId(userId);
-    }
-
-    protected UserResponse userFallback(Long userId, Throwable t) {
-
-        log.warn("Fallback triggered for userId={}", userId, t);
-
-        return new UserResponse(
-                userId,
-                "unknown",
-                "unknown",
-                "UNKNOWN",
-                false
-        );
-    }
+//    @CircuitBreaker(name = "userService", fallbackMethod = "userFallback")
+//    protected UserResponse getUser(Long userId) {
+//        return userClient.getByUserId(userId);
+//    }
+//
+//    protected UserResponse userFallback(Long userId, Throwable t) {
+//
+//        log.warn("Fallback triggered for userId={}", userId, t);
+//
+//        return new UserResponse(
+//                userId,
+//                "unknown",
+//                "unknown",
+//                "UNKNOWN",
+//                false
+//        );
+//    }
 
     public Page<OrderResponse> getAll(OrderFilter filter, Pageable pageable) {
 
@@ -149,7 +151,7 @@ public class OrderService {
     private OrderResponse buildResponse(Order order) {
 
         OrderResponse response = orderMapper.toResponse(order);
-            response.setUser(getUser(order.getUserId()));
+            response.setUser(userServiceClient.getUser(order.getUserId()));
 
         return response;
     }
