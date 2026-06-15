@@ -1,8 +1,6 @@
 package com.innowise.orderservice.service;
 
-import com.innowise.orderservice.client.UserClient;
 import com.innowise.orderservice.client.UserServiceClient;
-import com.innowise.orderservice.client.dto.UserResponse;
 import com.innowise.orderservice.exception.ItemNotFoundException;
 import com.innowise.orderservice.exception.OrderNotFoundException;
 import com.innowise.orderservice.mapper.OrderMapper;
@@ -18,7 +16,6 @@ import com.innowise.orderservice.model.entity.OrderStatus;
 import com.innowise.orderservice.repository.ItemRepository;
 import com.innowise.orderservice.repository.OrderRepository;
 import com.innowise.orderservice.repository.OrderSpecification;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,7 +37,6 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
-    private final UserClient userClient;
     private final OrderMapper orderMapper;
     private final UserServiceClient userServiceClient;
 
@@ -86,24 +82,6 @@ public class OrderService {
 
         return buildResponse(order);
     }
-
-//    @CircuitBreaker(name = "userService", fallbackMethod = "userFallback")
-//    protected UserResponse getUser(Long userId) {
-//        return userClient.getByUserId(userId);
-//    }
-//
-//    protected UserResponse userFallback(Long userId, Throwable t) {
-//
-//        log.warn("Fallback triggered for userId={}", userId, t);
-//
-//        return new UserResponse(
-//                userId,
-//                "unknown",
-//                "unknown",
-//                "UNKNOWN",
-//                false
-//        );
-//    }
 
     public Page<OrderResponse> getAll(OrderFilter filter, Pageable pageable) {
 
