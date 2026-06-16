@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-items
+      author: Marina
+      changes:
+        - insert:
+            tableName: items
+            columns:
+              - column:
+                  name: name
+                  value: Keyboard
+              - column:
+                  name: price
+                  valueNumeric: 50.00
+              - column:
+                  name: created_at
+                  valueDate: 2026-06-03T00:00:00
+              - column:
+                  name: updated_at
+                  valueDate: 2026-06-03T00:00:00
+
+        - insert:
+            tableName: items
+            columns:
+              - column:
+                  name: name
+                  value: Mouse
+              - column:
+                  name: price
+                  valueNumeric: 25.00
+              - column:
+                  name: created_at
+                  valueDate: 2026-06-03T00:00:00
+              - column:
+                  name: updated_at
+                  valueDate: 2026-06-03T00:00:00

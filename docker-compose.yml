@@ -1,0 +1,44 @@
+services:
+  orders-db:
+    image: postgres:16
+    container_name: orders-db
+
+    environment:
+      POSTGRES_DB: orders-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5437:5432"
+
+    volumes:
+      - orders-db_data:/var/lib/postgresql/data
+
+    networks:
+      - microservices-net
+
+  orderservice:
+    container_name: orders-service
+    ports:
+      - "8082:8082"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://orders-db:5432/orders-db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVICES_USERS_SERVICE_URL: http://users-service:8080
+
+    networks:
+      - microservices-net
+
+    depends_on:
+      - orders-db
+
+volumes:
+  orders-db_data:
+
+networks:
+  microservices-net:
+    external: true
